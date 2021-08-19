@@ -1,8 +1,9 @@
+
 select *, from
 (select prodinsights.*,stock.inventory,stock.mrp,stock.selling_price from (
 (select prod.*,image.image from(
 (select distinct * from (
-select * , {{Country}} Halo_Country
+select * , 'MissL' Halo_Country
 from(
 select
 -- c.startdate date_start,
@@ -37,10 +38,10 @@ order_date,
 count(distinct order_id) Overall_orders,
 sum(product_quantity) Overall_units,
 sum(total_item_price) Overall_revenue,
-sum(case when order_status in {{Authentic_Orders}} then total_item_price  end)  revenue,
-Sum(case when order_status in {{Authentic_Orders}} then product_quantity end) units,
-count(distinct case when order_status in {{Authentic_Orders}} then order_id end) orders
-from `{{fOrders}}`
+sum(case when order_status in ('successful') then total_item_price  end)  revenue,
+Sum(case when order_status in ('successful') then product_quantity end) units,
+count(distinct case when order_status in ('successful') then order_id end) orders
+from `noted-computing-279322.halo_1_1.fOrders`
 group by product_id,
 product_sku,
 product_title,
@@ -50,13 +51,13 @@ store_id
     left join
 (select distinct product_id, category, sub_category, prod_name,category_id,
   case when store_id = 0 then 4 else store_id end Cstore_id
- from `{{magento_missl_productscat}}`)test2
+ from `noted-computing-279322.halo_1_1.magento_missl_productscat`)test2
 on test.product_id = cast(test2.product_id as string)
 -- and test.product_title = test2.prod_name
 and test.store_id = cast(test2.Cstore_id as STRING)
 )a
 left join
-`{{fGABaseSKU}}` c
+`noted-computing-279322.halo_1_1.fGABaseSKU` c
 on cast(c.D_ga_productSku as string) = cast(a.Product_id as string)
 --and a.category = c.D_ga_productCategoryHierarchy
 --and a.product_title = c.D_ga_productName
@@ -66,9 +67,9 @@ where product_id IS NOT NULL
 ) where date_start>='2018-01-1'
 )prod
 left join
-(select distinct Product_id, Image from `{{fProductImage}}`)image
+(select distinct Product_id, Image from `noted-computing-279322.halo_1_1.fProductImage`)image
 on prod.product_id = image.Product_id)
 )prodinsights
 left join
-(select * from `{{fProductStock}}`)stock
+(select * from `noted-computing-279322.halo_1_1.fProductStock`)stock
 on prodinsights.product_id = stock.productid) )

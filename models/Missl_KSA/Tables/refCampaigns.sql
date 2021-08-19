@@ -1,6 +1,7 @@
+
 select *,case when Type in ('Direct','Offline','Organic','Referral','others') then 'Non Paid'
               else 'Paid' end Paid_NonPaid,
-              {{Country}} Halo_Country
+              'MissL' Halo_Country
 from 
 (
 select *,case when Publisher in ('Direct') then 'Direct'
@@ -15,7 +16,6 @@ select *,case when Publisher in ('Direct') then 'Direct'
               else 'others' end Type
 from              
 (              
-
 select *,case when REGEXP_CONTAINS(source_medium,".*(?i)(direct).*") then 'Direct'   
               when REGEXP_CONTAINS(source_medium,".*(?i)bibaoffline.*") then 'BibaOffline'
               when REGEXP_CONTAINS(source_medium,".*facebook / social.*") then 'Facebook_Social'
@@ -50,14 +50,13 @@ select *,case when REGEXP_CONTAINS(source_medium,".*(?i)(direct).*") then 'Direc
               
 from
 (
-
 select row_number() over() campaign_id,* ,case when source_medium like '%google%' or source_medium like '%Google%' then 'Google'
                                                when source_medium like '%facebook%' or source_medium like '%Facebook%' then 'Facebook'
                                                else 'Others' end Source
 from
 (
 select distinct campaign_name,source_medium
-from `{{refKeywords}}`
+from `noted-computing-279322.halo_1_1.refKeywords`
 )
 )
 )

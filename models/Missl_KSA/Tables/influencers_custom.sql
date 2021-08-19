@@ -1,3 +1,4 @@
+
 select date,code,spend,orders,revenue,ifnull(share_of_sales,0) share_of_sales,ifnull(cpo,0) cpo,ifnull(aov,0) aov
 from
 (
@@ -20,19 +21,18 @@ from
 ((select c.date,c.code,d.spend_per_day spend
 from
 (select distinct date,lower(trim(code)) code,monthname,a.year,country_ksa_egypt
-from `{{Calendar}}` a
+from `noted-computing-279322.halo_1_1.Calendar` a
 cross join
-`{{magento_influencerscode}}` b) c
-left join `{{magento_influencerscode}}` d
+`noted-computing-279322.halo_1_1.magento_influencerscode` b) c
+left join `noted-computing-279322.halo_1_1.magento_influencerscode` d
 on c.code = lower(trim(d.code))
 and lower(c.monthname) = lower(substr(d.month_paid,1,3))
 and c.year = d.year
 where lower(c.country_ksa_egypt) = 'ksa') e
-left join `{{fOrders}}` f
+left join `noted-computing-279322.halo_1_1.fOrders` f
 on e.date = f.order_date
 and e.code = lower(f.coupon_code))
-
 group by 1,2) n
 where orders > 0 or spend > 0) x
-left join `{{fDailyAgg}}` y
+left join `noted-computing-279322.halo_1_1.fDailyAgg` y
 on x.date = y.date))

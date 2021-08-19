@@ -1,5 +1,5 @@
 select
 Lower (user_id) User_id,
-customer_reference_id, {{Country}} Halo_Country
+customer_reference_id, {{var('Country')}} Halo_Country
 from
-`{{fOrders}}`
+{{var('fOrders')}}

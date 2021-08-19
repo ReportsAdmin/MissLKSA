@@ -1,3 +1,4 @@
+
 select * except(date_level1) from (
 (select * except(date_level1) from (
 (select * except(date_level1) from (
@@ -29,7 +30,7 @@ select * except(date_level1) from (
 (select * except(date_level) from
 (select * except(date_level) from (
 (select
-{{Country}} Halo_Country,
+'MissL' Halo_Country,
 a.date,
 ua.sessions,
 ad.spend,
@@ -54,7 +55,6 @@ store.New_Customer_Orders,
 store.Existing_Customer_Orders,
 store.New_Customer_Revenue,
 store.Existing_Customer_Revenue,
-
 store.GrossRevenue,
 store.NetRevenue,
 store.MSRP,
@@ -74,7 +74,6 @@ store.Total_revenue,
 store.unsucessful_revenue,
 store.influencersorders,
 store.unsucessful_orders,
-
 ss.Allvisits,
 ss.Productviews,
 ss.Addstocart,
@@ -96,71 +95,52 @@ us.registered_users,
 us.Bounce,
 merc.DiscountedSales,
 merc.NonDiscountedSales,
-
 prod.Impressions,
 prod.Clicks,
 prod.ProductDetailViews,
 prod.ProductAddstocart,
-
 pg.avgSessionDuration,
 pg.avgPageLoadTime,
 pg.sessions as  PgSessions,
 pg.exits,
-
 -- LP_Lan.LP_deviceCategory,
 -- LP_Lan.LP_browser,
 LP_Lan.LP_Lan_Bounce,
 LP_Lan.LP_Lan_Sessions,
 LP_Lan.LP_Lan_Transactions,
-
 -- H_Lan.H_deviceCategory,
 -- H_Lan.H_browser,
 H_Lan.H_Lan_Bounces,
 H_Lan.H_Lan_Sessions,
 H_Lan.H_Lan_transactions,
-
 -- P_Lan.P_deviceCategory,
 -- P_Lan.P_browser,
 P_Lan.P_bounces,
 P_Lan.P_Transactions,
 P_Lan.P_Sessions,
-
 Home_Pg.H_Sessions,
 Home_Pg.H_AvgsesDur,
 Home_Pg.H_Pages_Per_Sess,
 Home_Pg.H_AvgPgLT,
 Home_Pg.H_Bounces,
 Home_Pg.H_Transactions,
-
 List_pg.impressions LP_impressions,
 List_pg.Clicks LP_Clicks,
 List_pg.addstocart LP_addstocart,
 List_pg.productDetailViews LP_productDetailViews
-
-
-
-
 from
-
-`{{Calendar}}` a
+`noted-computing-279322.halo_1_1.Calendar` a
 left join
-
-(select date_start, sum(spend) spend  from `{{fAdInsights}}` group by date_start) ad
+(select date_start, sum(spend) spend  from `noted-computing-279322.halo_1_1.fAdInsights` group by date_start) ad
 on a.date = ad.date_start
-
 left join
-
 (select date_start, sum(sessions) sessions ,
     sum(case when is_ad_order = True then sessions end) Paid_sessions,
    sum(case when is_ad_order != True then sessions
     end) Non_Paid_sessions
-
- from `{{fUAInsights}}` group by date_start) ua
-
+ from `noted-computing-279322.halo_1_1.fUAInsights` group by date_start) ua
  on a.date= ua.date_start
-
  left join
-
 (select date_start,sum(Allvisits)  Allvisits,
                    sum(Productviews) as Productviews,
                    sum( Addstocart) as Addstocart,
@@ -169,16 +149,13 @@ left join
                    sum(PaymentOption) as PaymentOption,
                    sum(PaymentClick) as PaymentClick,
                    sum(Transactions) as Transactions,
-
                    sum(AddstocartPage) as AddstocartPage,
                    sum(LogginPage) as LogginPage,
                    sum(ShippingPage) as ShippingPage,
                    sum(PaymentPage) as PaymentPage
-                   from `{{fShoppingStages}}` group by date_start) ss
+                   from `noted-computing-279322.halo_1_1.fShoppingStages` group by date_start) ss
 on a.date=ss.date_start
-
 left join
-
 (select
 order_date date_start,
 sum(product_quantity) total_product_quantity,
@@ -188,181 +165,143 @@ sum(item_discount) total_item_discount,
 safe_divide(sum(item_discount),sum(total_item_price)) per_discount,
 count(distinct order_id) orders,
 count(distinct user_id) users,
-sum(case when order_status in {{Authentic_Orders}}  then product_quantity end) total_product_quantity_auth,
-sum(case when order_status in {{Authentic_Orders}}  then total_item_price end) total_item_price_auth,
-sum(case when order_status in {{Authentic_Orders}}  and is_ad_order = True then total_item_price end) total_ad_revenue_auth,
-sum(case when order_status in {{Authentic_Orders}}  and (is_ad_order = False or is_ad_order is null) then total_item_price end) total_non_ad_revenue_auth,
-sum(case when order_status in {{Authentic_Orders}}  then item_discount end) total_item_discount_auth,
-safe_divide(sum(case when order_status in {{Authentic_Orders}}  then item_discount end),sum(case when order_status in {{Authentic_Orders}} then total_item_price end)) per_discount_auth,
-count(distinct case when order_status in {{Authentic_Orders}}  then order_id end) orders_auth,
-count(distinct case when order_status in {{Authentic_Orders}}  then user_id end) users_auth,
-count(distinct case when order_status in {{Authentic_Orders}} and is_ad_order = True then order_id end) Paid_orders,
-count(distinct case when order_status in {{Authentic_Orders}} and (is_ad_order = False or is_ad_order is null) then order_id end) Non_Paid_orders,
-sum(case when order_status in {{Authentic_Orders}}  and is_new_customer =1 then total_item_price end) New_Customer_Revenue,
-sum(case when order_status in {{Authentic_Orders}}  and is_new_customer =0 then total_item_price end) Existing_Customer_Revenue,
-count(distinct case when order_status in {{Authentic_Orders}}  and is_new_customer = 1 then order_id end) New_Customer_Orders,
-count(distinct case when order_status in {{Authentic_Orders}} and is_new_customer = 0 then order_id end) Existing_Customer_Orders,
-count(distinct case when order_status in {{Authentic_Orders}} and is_new_customer = 1 then user_id end) New_Customers,
-count(distinct case when order_status in {{Authentic_Orders}}  and is_new_customer = 0 then user_id end) Existing_Customers,
-
-sum(case when order_status in {{Authentic_Orders}}  then total_item_price_wo_discount end) GrossRevenue,
-sum(case when order_status in {{Authentic_Orders}}  then Net_Revenue end)  NetRevenue,
-sum(case when order_status in {{Authentic_Orders}}  then WebPrice end) MSRP,
+sum(case when order_status in ('successful')  then product_quantity end) total_product_quantity_auth,
+sum(case when order_status in ('successful')  then total_item_price end) total_item_price_auth,
+sum(case when order_status in ('successful')  and is_ad_order = True then total_item_price end) total_ad_revenue_auth,
+sum(case when order_status in ('successful')  and (is_ad_order = False or is_ad_order is null) then total_item_price end) total_non_ad_revenue_auth,
+sum(case when order_status in ('successful')  then item_discount end) total_item_discount_auth,
+safe_divide(sum(case when order_status in ('successful')  then item_discount end),sum(case when order_status in ('successful') then total_item_price end)) per_discount_auth,
+count(distinct case when order_status in ('successful')  then order_id end) orders_auth,
+count(distinct case when order_status in ('successful')  then user_id end) users_auth,
+count(distinct case when order_status in ('successful') and is_ad_order = True then order_id end) Paid_orders,
+count(distinct case when order_status in ('successful') and (is_ad_order = False or is_ad_order is null) then order_id end) Non_Paid_orders,
+sum(case when order_status in ('successful')  and is_new_customer =1 then total_item_price end) New_Customer_Revenue,
+sum(case when order_status in ('successful')  and is_new_customer =0 then total_item_price end) Existing_Customer_Revenue,
+count(distinct case when order_status in ('successful')  and is_new_customer = 1 then order_id end) New_Customer_Orders,
+count(distinct case when order_status in ('successful') and is_new_customer = 0 then order_id end) Existing_Customer_Orders,
+count(distinct case when order_status in ('successful') and is_new_customer = 1 then user_id end) New_Customers,
+count(distinct case when order_status in ('successful')  and is_new_customer = 0 then user_id end) Existing_Customers,
+sum(case when order_status in ('successful')  then total_item_price_wo_discount end) GrossRevenue,
+sum(case when order_status in ('successful')  then Net_Revenue end)  NetRevenue,
+sum(case when order_status in ('successful')  then WebPrice end) MSRP,
 sum(case when order_status = 'Returned'  then Net_Revenue end) ReturnsRevenue,
-sum(case when order_status in {{Authentic_Orders}} and is_item_returned=true  then product_quantity end) ReturnedUnits,
-sum(case when order_status in {{Authentic_Orders}}  and is_ad_order = True then Net_Revenue end) PaidNetRevenue,
-sum(case when order_status in {{Authentic_Orders}}  and (is_ad_order = False or is_ad_order is null) then Net_Revenue end) NonPaidNetRevenue,
+sum(case when order_status in ('successful') and is_item_returned=true  then product_quantity end) ReturnedUnits,
+sum(case when order_status in ('successful')  and is_ad_order = True then Net_Revenue end) PaidNetRevenue,
+sum(case when order_status in ('successful')  and (is_ad_order = False or is_ad_order is null) then Net_Revenue end) NonPaidNetRevenue,
 sum(case when order_status ='Canceled' then product_quantity end) Itemscancelled,
 count(distinct case when order_status = 'canceled' then order_id end) cancelled_orders,
-count(distinct case when checkout_type in {{COD}} and order_status in {{Authentic_Orders}} then order_id end) cod,
-count(distinct case when checkout_type in {{CC}} and order_status in {{Authentic_Orders}} then order_id end) cc,
-count(distinct case when checkout_type in {{tabby}} and order_status in {{Authentic_Orders}} then order_id end) tabby,
+count(distinct case when checkout_type in ('cashondelivery') and order_status in ('successful') then order_id end) cod,
+count(distinct case when checkout_type in ('cardDelivery','payfort_fort_cc','payfort_fort_installments','gurubhyo_premiumcards','checkoutcom_card_payment') and order_status in ('successful') then order_id end) cc,
+count(distinct case when checkout_type in ('tabby_installments') and order_status in ('successful') then order_id end) tabby,
 count(distinct case when order_status = 'Returned' then order_id end) returned_orders,
-sum(case when order_status in {{Authentic_Orders}}  then tax_amount end) tax_amount,
-sum(case when influencerscode is not null and order_status in {{Authentic_Orders}} then total_item_price end)influencersrevenue,
+sum(case when order_status in ('successful')  then tax_amount end) tax_amount,
+sum(case when influencerscode is not null and order_status in ('successful') then total_item_price end)influencersrevenue,
 sum(total_item_price) Total_revenue,
 sum(distinct case when order_status = 'unsucessful' then total_item_price end) unsucessful_revenue,
-count(distinct case when influencerscode is not null and order_status in {{Authentic_Orders}} then order_id end)influencersorders,
+count(distinct case when influencerscode is not null and order_status in ('successful') then order_id end)influencersorders,
 count(distinct case when order_status = 'unsucessful' then order_id end) unsucessful_orders
-
 --
-
-from `{{fOrders}}`
+from `noted-computing-279322.halo_1_1.fOrders`
 group by order_date) store
 on a.date=store.date_start
-
 left join
-
-`{{fCustJourney}}` us
+`noted-computing-279322.halo_1_1.fCustJourney` us
 on a.date=us.date_start
-
 left join
-
 (select order_date,sum(MRP) NonDiscountedSales,sum(Selling_Price) DiscountedSales
 from (
 select a.*,b.MRP*a.product_quantity MRP,b.Selling_Price*a.product_quantity Selling_Price
-from `{{fOrders}}` a left join `{{fProductStock}}` b
+from `noted-computing-279322.halo_1_1.fOrders` a left join `noted-computing-279322.halo_1_1.fProductStock` b
 on a.product_id=cast(b.productid as string)
 )
-where {% if not Mktplace_condition == '' %} order_source='Website' and {% endif %}
+where 
 Is_Successful_Order =True
 group by 1) merc
-
 on a.date=merc.order_date
-
 left join
-
 (select date_start,sum(impressions) Impressions,sum(clicks) Clicks,sum(productdetail_views) ProductDetailViews,
        sum(Addstocart) ProductAddstocart
-from `{{fProductInsights}}`
+from `noted-computing-279322.halo_1_1.fProductInsights`
 group by 1) prod
-
 on a.date=prod.date_start
-
-
 left join
-
 (select avg(cast(M_ga_avgSessionDuration as float64)) avgSessionDuration,
 avg(cast(M_ga_avgPageLoadTime as float64)) avgPageLoadTime,
 sum(cast(M_ga_exits as int64)) exits,
 sum(cast(M_ga_sessions as int64)) sessions,
-StartDate from `{{fGABasePages}}`
+StartDate from `noted-computing-279322.halo_1_1.fGABasePages`
 group by StartDate)pg
-
 on a.date=pg.StartDate
-
 left join
-
 (select StartDate LP_StartDate,
 --,D_ga_deviceCategory LP_deviceCategory,D_ga_browser LP_browser,
 sum(cast(M_ga_bounces as int64)) as LP_Lan_Bounce,sum(cast(M_ga_sessions as int64)) LP_Lan_Sessions,
 -- sum(cast(M_ga_sessions as int64)) sessions,sum(cast(M_ga_transactions as int64)) tran,
 sum(cast(M_ga_transactions as int64)) as LP_Lan_Transactions
- from `{{fGABaseLandingPages}}`
-where  {{ListPagecondition}}
+ from `noted-computing-279322.halo_1_1.fGABaseLandingPages`
+where  lower(D_ga_landingPagePath) like '%/necklaces%' or lower(D_ga_landingPagePath) like '%/earrings%' or lower(D_ga_landingPagePath) like '%/rings%' or lower(D_ga_landingPagePath) like '%/bracelets%' or lower(D_ga_landingPagePath) like '%/anklets%' or lower(D_ga_landingPagePath) like '%/lady-fozaza%' or lower(D_ga_landingPagePath) like '%/shop-all%' or lower(D_ga_landingPagePath) like '%/offer%' or lower(D_ga_landingPagePath) like '%/new-arrival%' or lower(D_ga_landingPagePath) like '%/gif%'
 group by 1
 --,2,3
 --order by 1
 --,2,3
 ) LP_Lan
-
 on a.date=LP_Lan.LP_StartDate
-
 left join
-
 (select StartDate H_StartDate ,
 --D_ga_deviceCategory H_deviceCategory,D_ga_browser H_browser,
 sum(cast(M_ga_bounces as int64)) H_Lan_Bounces,sum(cast(M_ga_sessions as int64))  H_Lan_Sessions,
 --sum(cast(M_ga_sessions as int64)) sessions,sum(cast(M_ga_transactions as int64)) tran,
-sum(cast(M_ga_transactions as int64)) H_Lan_transactions  from `{{fGABaseLandingPages}}`
+sum(cast(M_ga_transactions as int64)) H_Lan_transactions  from `noted-computing-279322.halo_1_1.fGABaseLandingPages`
 where D_ga_landingPagePath in ('/sa_en/','/sa_ar/','/')
 group by 1
 --,2,3
 --order by 1
 --,2,3
 ) H_Lan
-
 on a.date=H_Lan.H_StartDate
-
 left join
-
 (select StartDate P_StartDate,
 --D_ga_deviceCategory P_deviceCategory,D_ga_browser P_browser,
 sum(cast(M_ga_bounces as int64)) P_bounces,sum(cast(M_ga_sessions as int64)) P_Sessions,
 --sum(cast(M_ga_sessions as int64)) sessions,sum(cast(M_ga_transactions as int64)) tran,
 sum(cast(M_ga_transactions as int64)) P_Transactions
-from `{{fGABaseLandingPages}}`
-where  {{Productpagecondition}}
+from `noted-computing-279322.halo_1_1.fGABaseLandingPages`
+where  lower(D_ga_landingPagePath) like '%/product/%'
 group by 1
 --,2,3
 --order by 1
 --,2,3
 ) P_Lan
-
 on a.date=P_Lan.P_StartDate
-
-
 left join
-
-
 (select StartDate,sum(cast(M_ga_sessions as int64)) H_Sessions,
 sum(cast(M_ga_transactions as int64)) H_Transactions,
 ((avg(cast(M_ga_avgSessionDuration as float64)))/60 * sum(cast(M_ga_sessions as int64)) ) H_Duration,
 null H_AvgsesDur,null H_Pages_Per_Sess,
 avg(cast(M_ga_avgPageLoadTime as float64)) H_AvgPgLT,
 sum(cast(M_ga_bounces as int64))H_Bounces
-from `{{fGABaseLandingPages}}`
+from `noted-computing-279322.halo_1_1.fGABaseLandingPages`
 where D_ga_landingPagePath in ('/sa_en/','/sa_ar/','/')
 group by 1) Home_Pg
-
 on a.date=Home_Pg.StartDate
-
 left join
-
 (select sum(cast(M_ga_pageviews as int64)) as impressions,
 sum(cast(M_ga_productListClicks as int64)) as Clicks,sum(cast(M_ga_productAddsToCart as int64)) addstocart,
  sum(cast(M_ga_productDetailViews as int64)) as productDetailViews,
 StartDate
-from `{{fGABaseLandingPages}}`
-where  {{ListPagecondition}}
+from `noted-computing-279322.halo_1_1.fGABaseLandingPages`
+where  lower(D_ga_landingPagePath) like '%/necklaces%' or lower(D_ga_landingPagePath) like '%/earrings%' or lower(D_ga_landingPagePath) like '%/rings%' or lower(D_ga_landingPagePath) like '%/bracelets%' or lower(D_ga_landingPagePath) like '%/anklets%' or lower(D_ga_landingPagePath) like '%/lady-fozaza%' or lower(D_ga_landingPagePath) like '%/shop-all%' or lower(D_ga_landingPagePath) like '%/offer%' or lower(D_ga_landingPagePath) like '%/new-arrival%' or lower(D_ga_landingPagePath) like '%/gif%'
 group by StartDate) List_pg
 on a.date=List_pg.StartDate
 ) dailyagg1
-
 left join
-
 (select StartDate as date_level,
 sum(cast(M_ga_pageviews  as int64)) pageviews
- from `{{fGABaseLandingPages}}`
+ from `noted-computing-279322.halo_1_1.fGABaseLandingPages`
 group by 1) landing1
-
 on dailyagg1.date=landing1.date_level
-
 ))dailyagg2
-
 left join
-
-
 (select distinct date_level,
 sum(case when D_ga_deviceCategory = 'mobile' then sessions end)mobile,
 sum(case when D_ga_deviceCategory = 'tablet' then sessions end) tablet,
@@ -371,14 +310,11 @@ from (
 select distinct (parse_date('%Y%m%d',(cast(D_ga_date as string)))) as date_level,
 D_ga_deviceCategory,
 sum(cast(M_ga_sessions as int64)) Sessions
- from `{{fGADeviceBrowser}}`
+ from `noted-computing-279322.halo_1_1.fGADeviceBrowser`
 group by 1,2)group by 1) devicebrowser
-
 on dailyagg2.date=devicebrowser.date_level
 ) dailyagg3
-
 left join
-
 (select distinct (parse_date('%Y%m%d',(cast(D_ga_date as string)))) as date_level,
 sum(cast(M_ga_newUsers as int64))age_new_users,
 sum(case when D_ga_userAgeBracket='18-24' then cast(M_ga_newUsers as INT64) end) newusers_with_age_18_24,
@@ -394,13 +330,10 @@ sum(case when D_ga_userAgeBracket='45-54' then cast(M_ga_sessions as INT64)
 when D_ga_userAgeBracket='55-64' then cast(M_ga_sessions as INT64)
 when D_ga_userAgeBracket='65+' then cast(M_ga_sessions as INT64) end) sessions_with_age_above_45,
 sum(cast(M_ga_sessions as INT64)) age_sessions
-from `{{fGAAge}}`
+from `noted-computing-279322.halo_1_1.fGAAge`
 group by 1)age_level
-
 on dailyagg3.date = age_level.date_level)age_fkpi
-
 left join
-
 (select distinct (parse_date('%Y%m%d',(cast(D_ga_date as string)))) as date_gender,
 sum(cast(M_ga_newUsers as int64))gender_new_users,
 sum(case when D_ga_userGender = 'female' then cast(M_ga_newUsers as INT64) end) newUsers_with_gender_female,
@@ -408,23 +341,17 @@ sum(case when D_ga_userGender = 'male' then cast(M_ga_newUsers as INT64) end) ne
 sum(case when D_ga_userGender = 'female' then cast(M_ga_sessions as INT64) end) sessions_with_gender_female,
 sum(case when D_ga_userGender = 'male' then cast(M_ga_sessions as INT64) end) sessions_with_gender_male,
 sum(cast (M_ga_sessions as INT64)) gender_sessions
-from `{{fGAGender}}`
+from `noted-computing-279322.halo_1_1.fGAGender`
 group by 1)gender_level
-
 on age_fkpi.date = gender_level.date_gender)dailyagg4
-
 left join
-
 (select distinct (parse_date('%Y%m%d',(cast(D_ga_date as string)))) as date_level,
 sum(case when D_ga_userType = 'New Visitor' then cast(M_ga_sessions as INT64) end) new_visitor_sessions,
 sum(case when D_ga_userType = 'Returning Visitor' then cast(M_ga_sessions as INT64) end) returning_visitor_sessions,
-from `{{fGABaseVisitors}}`
+from `noted-computing-279322.halo_1_1.fGABaseVisitors`
 group by 1)usertype
-
 on dailyagg4.date = usertype.date_level)dailyagg5
-
 left join
-
 (select distinct date as date_level,
 sum(case when Channel = "Snapchat_paid" then Sessions end) Snapchat_paid_sessions,
 sum(case when Channel = "Snapchat_Unpaid" then Sessions end) Snapchat_Unpaid_sessions,
@@ -475,39 +402,29 @@ when REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)referral.*') then 'Referral'
 when REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)direct.*') then 'Direct'
 when REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)Facebook.*|.*(?i)fb.*') and REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)paid.*|.*(?i)cpc.*') then 'Facebook_Inhouse_paid'
 else 'Others' end Channel,sum(cast(M_ga_sessions as INT64)) sessions
-from `{{fGACampaigncost}}`
+from `noted-computing-279322.halo_1_1.fGACampaigncost`
 group by date,channel)
 group by 1)sourcemedium
 on dailyagg5.date = sourcemedium.date_level)dailyagg6
-
 left join
-
 (select distinct StartDate as date_level,
 sum(cast( M_ga_users as int64)) day_level_users,
 sum(cast( M_ga_newUsers as int64)) day_level_new_users
-from `{{fGADaylevelusers}}` group by 1)day_level_users
+from `noted-computing-279322.halo_1_1.fGADaylevelusers` group by 1)day_level_users
 on dailyagg6.date = day_level_users.date_level))dailyagg7
-
 left join
-
 (select distinct startdate as date_level,
  sum(sessionduration)sessionduration
 from(select *, (cast(M_ga_avgSessionDuration as float64) * cast(M_ga_sessions as int64)) SessionDuration
-from `{{fGABasePages}}`)
+from `noted-computing-279322.halo_1_1.fGABasePages`)
 group by 1)sessionduration_table
-
 on dailyagg7.date = sessionduration_table.date_level))dailyagg8
-
 left join
-
 (select distinct date as date_level,sum(cast(daylevel as INT64))daylevel from
-(select *,case when date = date then '1' end daylevel from `{{Calendar}}`)
+(select *,case when date = date then '1' end daylevel from `noted-computing-279322.halo_1_1.Calendar`)
 group by 1)calendar1
-
 on dailyagg8.date = calendar1.date_level))dailyagg9
-
 left join
-
 (select distinct date as date_level,
 sum(case when Channel = "Snapchat_paid" then newusers end) Snapchat_paid_newusers,
 sum(case when Channel = "Snapchat_Unpaid" then newusers end) Snapchat_Unpaid_newusers,
@@ -559,14 +476,11 @@ when REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)referral.*') then 'Referral'
 when REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)direct.*') then 'Direct'
 when REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)Facebook.*|.*(?i)fb.*') and REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)paid.*|.*(?i)cpc.*') then 'Facebook_Inhouse_paid'
 else 'Others' end Channel,sum(cast(M_ga_newusers as INT64)) newusers
-from `{{fGASourcemediumnewusers}}`
+from `noted-computing-279322.halo_1_1.fGASourcemediumnewusers`
 group by date,channel)
 group by 1)sourcemediumnewusers
-
 on dailyagg9.date = sourcemediumnewusers.date_level))dailyagg10
-
 left join
-
 (select distinct date as date_level,
 sum(case when code = "missl10" then Spend_per_day end) MissL10_spend_day,
 sum(case when code = "husin10" then Spend_per_day end) Husin10_spend_day,
@@ -619,32 +533,29 @@ sum(case when code = "missl2u" then revenue end) missl2u_revenue
 from
 (select * except(order_date,couponcode) from
 (select * except(monthcode,yearcode,month,year) from
-(select distinct date,month,year from `{{Calendar}}`)a
+(select distinct date,month,year from `noted-computing-279322.halo_1_1.Calendar`)a
 left join
 (select distinct lower(code)code, Spend_per_day,month as monthcode,year as yearcode
-from `{{magento_influencerscode}}`
+from `noted-computing-279322.halo_1_1.magento_influencerscode`
 where currency = 'SAR')b
 ON a.month = b.monthcode and a.year = b.yearcode)c
 left join
 (select distinct order_date,count(distinct increment_id) orders,sum(total_item_price) revenue,couponcode from
 (select distinct order_date,increment_id,sum(total_item_price)total_item_price,lower(coupon_code)couponcode
-from `{{fOrders}}`
+from `noted-computing-279322.halo_1_1.fOrders`
 where order_status = 'successful'
 group by order_date,increment_id,couponcode)
 where couponcode is not null
 group by order_date,couponcode)d
 ON c.date = d.order_date and c.code = d.couponcode)
 group by date_level) customer_acquisition
-
 on dailyagg10.date = customer_acquisition.date_level))dailyagg11
-
 left join
-
 (select *except(date_level) from
 (select *except(start_date) from
 (select *except(date_level) from
 (select *except(date_level) from
-(select distinct date as date_level1 from `{{Calendar}}`
+(select distinct date as date_level1 from `noted-computing-279322.halo_1_1.Calendar`
 where date >= '2020-01-01')a
 left join
 (select distinct date as date_level,
@@ -685,7 +596,7 @@ when REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)Facebook.*|.*(?i)fb.*') and REGEXP
 when REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)Youtube.*|.*(?i)youtube.*') and REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)paid.*|.*(?i)cpc.*') then 'Youtube_paid'
 when REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)tiktok.*|.*(?i)Tiktok.*') and REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)paid.*|.*(?i)cpc.*') then 'Tiktok_paid'
 end customer_acquisition,sum(cast(M_ga_sessions as INT64)) sessions
-from `{{fGACampaigncost}}`
+from `noted-computing-279322.halo_1_1.fGACampaigncost`
 group by date,customer_acquisition)
 where customer_acquisition is not null)gacost
 left join
@@ -729,10 +640,10 @@ when REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)referral.*') then 'Referral'
 when REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)direct.*') then 'Direct'
 when REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)Facebook.*|.*(?i)fb.*') and REGEXP_CONTAINS(D_ga_sourcemedium,'.*(?i)paid.*|.*(?i)cpc.*') then 'Facebook_Inhouse_paid'
 else 'Others' end customer_acqui,d_ga_transactionid
-from `{{fGABaseTransactions}}`)
+from `noted-computing-279322.halo_1_1.fGABaseTransactions`)
 )a
 right join
-(select distinct increment_id,sum(total_item_price)total_item_price,order_date as date_level from `{{fOrders}}`
+(select distinct increment_id,sum(total_item_price)total_item_price,order_date as date_level from `noted-computing-279322.halo_1_1.fOrders`
 where order_status = 'successful' group by 1,3)b
 ON a.d_ga_transactionid = b.increment_id
 where increment_id is not null)
@@ -757,7 +668,7 @@ when lower(platform) in ('facebook','messenger','audience_network') then 'roi_hu
 end cust_acquisition from
 (select distinct cast(date_start as date)date_level,campaign_id, campaign_name,platform,
 sum(cost)amount_spend,Retargeting
-from `{{magento_facebookflatfile}}`
+from `noted-computing-279322.halo_1_1.magento_facebookflatfile`
 where country = 'KSA'
 group by date_level,campaign_id,campaign_name,platform,retargeting))
 group by date_level)d
@@ -768,7 +679,7 @@ sum(case when lower(snapchat_flag) = 'snapchat_paid' then total_spend end) snapc
 (select start_date,sum(Amount_Spent) as total_spend,snapchat_flag
 from
 (select Date(cast(Start_Time as date)) as start_date,Campaign_Id,campaign_name,Amount_Spent,"Snapchat_paid" as snapchat_flag
-from `{{magento_snapchatflatfile}}`
+from `noted-computing-279322.halo_1_1.magento_snapchatflatfile`
 -- where Start_time <> ""
 )
 group by start_date,snapchat_flag)
@@ -782,35 +693,26 @@ sum(case when customer_acquisition = 'Adwords' then adcost end) google_cust_adsp
 case when D_ga_sourcemedium = 'google / cpc' or D_ga_sourcemedium = 'google / paid' then 'Adwords' end customer_acquisition,
 sum(cast(M_ga_adCost as float64)) adcost,
 sum(cast(M_ga_transactionRevenue as float64)) google_revenue,
-from `{{fGACampaigncost}}`
+from `noted-computing-279322.halo_1_1.fGACampaigncost`
 -- where lower( D_ga_campaign ) like '%sa%' and lower( D_ga_campaign ) not like '%eg%'
 group by date_level,customer_acquisition)
 group by date_level)j
 ON i.date_level1 = j.date_level) customer_acquisition1
-
 on dailyagg11.date = customer_acquisition1.date_level1))dailyagg12
-
 left join
-
 (select date as date_level1,target
-from `{{magento_target}}`)target
-
+from `noted-computing-279322.halo_1_1.magento_target`)target
 on dailyagg12.date = target.date_level1))dailyagg13
-
 left join
-
 -- OPERATIONS KPIS (CONFIRMED, SHIPPED & DELIVERED ORDERS)
 (select distinct created_date date_level1,
 count(distinct case when status = 'confirmed' then increment_id end)orders_confirmed,
 count(distinct case when status = 'shipped' then increment_id end)orders_shipped,
 count(distinct case when status like 'delivered' then increment_id end)orders_delivered
-from `{{magento_transaction_operations}}`
+from `noted-computing-279322.halo_1_1.magento_transaction_operations`
 group by 1)operationsKPI
-
 on dailyagg13.date = operationsKPI.date_level1))dailyagg14
-
 left join
-
 -- OPERATIONS KPIS (TIME)
 (select created_date date_level1,round(sum(time_to_confirm),2)total_time_to_confirm,round(sum(time_to_ship),2)total_time_to_ship,
 round(sum(time_to_deliver),2)total_time_to_deliver,round(sum(time_to_fulfill),2)total_time_to_fulfill,
@@ -825,19 +727,14 @@ select increment_id,created_date,
 min(case when status = 'confirmed' then updated_date end) confirmed_date,
 min(case when status = 'shipped' then updated_date end) shipped_date,
 min(case when status = 'delivered' then updated_date end) delivered_date
-from `{{magento_transaction_operations}}`
+from `noted-computing-279322.halo_1_1.magento_transaction_operations`
 group by 1,2))
 group by 1)operationskpi1
-
 on dailyagg14.date = operationskpi1.date_level1))dailyagg15
-
 left join
-
-(select * from `{{B_magento_marketingtarget}}`)marketingtarget
+(select * from `noted-computing-279322.halo_1_1.magento_sales_target`)marketingtarget
 on dailyagg15.date = marketingtarget.date_level1))dailyagg16
-
 left join
-
 (select date as date_level1,
 sum(case when channel = 'facebook & instagram' then target_per_day end) facebook_target_day,
 sum(case when channel = 'snapchat' then target_per_day end) snapchat_target_day,
@@ -846,18 +743,15 @@ sum(case when channel = 'tiktok' then target_per_day end) tiktok_target_day,
 sum(case when channel = 'youtube' then target_per_day end) youtube_target_day,
 from
 (select * except(monthcode,yearcode,month,year) from
-(select distinct date,month,year from `{{Calendar}}`)a
+(select distinct date,month,year from `noted-computing-279322.halo_1_1.Calendar`)a
 left join
 (select distinct lower(channel)channel, Target_per_day,month as monthcode,year as yearcode
-from `{{B_magento_marketingchanneltarget}}`
+from `noted-computing-279322.marketing_goals_trial.Marketing_trial`
 where currency = 'SAR')b
 ON a.month = b.monthcode and a.year = b.yearcode)c
 group by 1)marketingchanneltarget
-
 on dailyagg16.date = marketingchanneltarget.date_level1))dailyagg17
-
 left join
-
 -- OPERATIONS (ON TIME & DELAYED SHIPMENTS)
 (select created_date date_level1,
 count(distinct case when on_time_del = "yes" then shipment_id end) on_time_shipments,
@@ -871,16 +765,13 @@ from
 transit_days,Pickup_Date__Creation_Date_ created_date,date(Delivery_Status_Action_Date)actual_del_date,
 from
 (select *
-from `{{B_magento_aramex}}`
+from `noted-computing-279322.halo_1_1.aramex`
 where lower(origin_country) like '%saudi%'))
 where shipment_id is not null))
 where created_date is not null
 group by 1)operationkpi2
-
 on dailyagg17.date = operationkpi2.date_level1))dailyagg18
-
 left join
-
 -- OPERATIONS (NOT DELIVERED/REFUSED)
 (select created_date date_level1,
 count(distinct case when refused = 'yes' then shipment_id end) refused_shipments,
@@ -889,29 +780,23 @@ from
 if(status = 'Refused','yes','no') refused
 from
 (select distinct awb shipment_id,status_category status,Pickup_Date__Creation_Date_ created_date
-from `{{B_magento_aramex}}`
+from `noted-computing-279322.halo_1_1.aramex`
 where awb is not null
 and lower(origin_country) like '%saudi%'))
 group by 1)operationkpi3
-
 on dailyagg18.date = operationkpi3.date_level1))dailyagg19
-
 left join
-
 -- OPERATIONS (AVERAGE DELIVERY ATTEMPTS OF SHIPMENTS)
 (select created_date date_level1,count(distinct shipment_id) shipments,sum(total_delivery_attempts)total_attempts
 from
 (select distinct awb shipment_id,total_delivery_attempts,Pickup_Date__Creation_Date_ created_date
-from `{{B_magento_aramex}}`
+from `noted-computing-279322.halo_1_1.aramex`
 where awb is not null
 and lower(origin_country) like '%saudi%'
 and total_delivery_attempts > 0)
 group by 1)operationkpi4
-
 on dailyagg19.date = operationkpi4.date_level1))dailyagg20
-
 left join
-
 -- CRM REPORT (TICKETS BY CHANNEL)
 (select distinct created_date date_level1,
 count(distinct id) total_tickets_created,
@@ -924,13 +809,10 @@ count(distinct case when channel not in ('web','twitter','email','chat','faceboo
 from
 (
 select distinct a.id,b.channel,date(datetime(cast(a.created_at as timestamp),'Asia/Riyadh'))created_date
-from `{{B_zendesk_tickets}}` a, unnest(via) b)
+from `noted-computing-279322.MissL1.zendesk_Tickets` a, unnest(via) b)
 group by 1)crm
-
 on dailyagg20.date = crm.date_level1))dailyagg21
-
 left join
-
 -- CRM REPORT (AVERAGE COMPLAINT RESOLVING TIME IN DAYS)
 (select created_date date_level1,sum(days_to_close) as total_days_to_close
 from
@@ -940,14 +822,11 @@ from
 (
 select distinct id,date(datetime(cast(created_at as timestamp),'Asia/Riyadh'))created_date,
 date(datetime(cast(updated_at as timestamp),'Asia/Riyadh'))updated_date
-from `{{B_zendesk_tickets}}`
+from `noted-computing-279322.MissL1.zendesk_Tickets`
 where status = 'closed'))
 group by 1)crm1
-
 on dailyagg21.date = crm1.date_level1))dailyagg22
-
 left join
-
 (-- CRM REPORT (TICKETS BY STATUS)
 select distinct created_date date_level1,
 count(distinct case when status = 'new' then id end) new_tickets,
@@ -959,13 +838,10 @@ count(distinct case when status = 'deleted' then id end) deleted_tickets,
 from
 (
 select distinct id,date(datetime(cast(created_at as timestamp),'Asia/Riyadh'))created_date,status
-from `{{B_zendesk_tickets}}`)
+from `noted-computing-279322.MissL1.zendesk_Tickets`)
 group by 1)crm2
-
 on dailyagg22.date = crm2.date_level1))dailyagg23
-
 left join
-
 -- CRM REPORT (TICKETS BY COMPLAINT CATEGORY)
 (select distinct created_date date_level1,
 count(distinct case when lower(tags) like '%return%' then id end) return,
@@ -980,33 +856,26 @@ or lower(tags) like '%manufacturing%' or lower(tags) like '%web%') then id end) 
 from
 (
 select distinct id,tags,date(datetime(cast(created_at as timestamp),'Asia/Riyadh'))created_date
-from `{{B_zendesk_tickets}}`)
+from `noted-computing-279322.MissL1.zendesk_Tickets`)
 group by 1)crm3
-
 on dailyagg23.date = crm3.date_level1))dailyagg24
-
 left join
-
 -- operationsorderscreated
 (select distinct created_date date_level1,orders_created
 from
 (select created_date,count(distinct increment_id)orders_created
 from
 (select distinct increment_id,date(datetime(created_at,'Asia/Riyadh'))created_date,status
-from `{{magento_transactionnew}}`
+from `noted-computing-279322.halo_1_1.magento_transactionnew`
 where store_id in (4,21)
 and status <> 'canceled')
 group by 1))orderscreated
-
 on dailyagg24.date = orderscreated.date_level1))dailyagg25
-
 left join
-
 (select day as date_level1,round(sum(cost_per_day),2) spend_per_day
-from `{{B_youtubeflatfile}}`
+from `noted-computing-279322.halo_1_1.youtube`
 group by 1)youtube
 on dailyagg25.date=youtube.date_level1))dailyagg26
-
 left join
 (select date as date_level1,
 sum(case when age_type = '>6' then product_count end) sku_more_than_six,
@@ -1023,14 +892,13 @@ case when lower(sku) like  '%ksa%' then 'KSA'
      when date_diff(calendar.Date,extract(date from prod.created_at),day)> 90 then '>3'
      when date_diff(calendar.Date,extract(date from prod.created_at),day) <90 then '<3'
      end as age_type
-from `noted-computing-279322.halo_1_1.Calendar` calendar,`{{B_magento_productentity}}` prod
+from `noted-computing-279322.halo_1_1.Calendar` calendar,`noted-computing-279322.MissL1.magento2_missl_live_catalog_product_entity` prod
 where Calendar.Date>extract(date from prod.created_at)
 order by 1,2)
 group by 3,1,2)
 where lower(country) = 'ksa'
 group by 1)product_age_count
 on dailyagg26.date=product_age_count.date_level1))dailyagg27
-
 left join
 (select distinct date_level1,num_of_skus,skus_80_20
 from
@@ -1046,12 +914,12 @@ from
 select *
 from
 (select order_date date_level1,product_sku,sum(total_item_price) sku_revenue
-from `{{fOrders}}`
+from `noted-computing-279322.halo_1_1.fOrders`
 where order_status = 'successful'
 group by 1,2)a
 left join
 (select order_date,count(distinct product_sku) num_of_skus,sum(total_item_price) revenue
-from `{{fOrders}}`
+from `noted-computing-279322.halo_1_1.fOrders`
 where order_status = 'successful'
 group by 1)b
 on a.date_level1 = b.order_date)
@@ -1059,24 +927,18 @@ order by date_level1,sku_revenue desc))
 where perc_contr_sum >= 80)
 where rownum = 1)sales80
 on dailyagg27.date=sales80.date_level1))dailyagg28
-
 left join
 (select * except(country) from
 (select extract(date from created_at) date_level1,count(distinct sku) as no_launched,
 case when lower(sku) like  '%ksa%' then 'KSA'
      when lower(sku) like '%eg%' then 'Egypt'
      else 'Not known' end country
-     from `{{B_magento_productentity}}`
+     from `noted-computing-279322.MissL1.magento2_missl_live_catalog_product_entity`
 group by 1,3 )
-
 where country='KSA')sku_launch
-
 on dailyagg28.date=sku_launch.date_level1))dailyagg29
-
 left join
-
 (SELECT distinct(cast (date as date)) as date_level1, round(sum(spend_ksa),2) as tiktok_cust_spend
-from `{{B_tiktok_ksa_flatfile}}`
+from `noted-computing-279322.tiktok_ksa.tiktok_ksa`
 group by 1) tiktok_ksa
-
 on dailyagg29.date=tiktok_ksa.date_level1)
