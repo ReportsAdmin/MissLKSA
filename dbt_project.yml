@@ -123,11 +123,13 @@ clean-targets:         # directories to be removed by `dbt clean`
 # as tables. These settings can be overridden in the individual model files
 # using the `{{ config(...) }}` macro.
 models:
-  Missl_KSA:
-    +full_refresh: true
-      # Applies to all files under models/example/
-    Tables:
-        materialized: table
-    Views:
-        materialized: view
-        
+  Missl:
+  #give the project name used on the top
+    Missl_KSA:
+      +full_refresh: true
+        # Applies to all files under models/example/
+      Tables:
+          materialized: table
+      Views:
+          materialized: view
+          
