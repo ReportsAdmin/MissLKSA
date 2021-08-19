@@ -10,9 +10,11 @@ vars:
     project: missl
     project_dataset: noted-computing-279322.halo_1_1_test
     
-    
     ga_age: noted-computing-279322.MissL1.halo_ga1_216655333_age
-    
+    fOrders: noted-computing-279322.halo_1_1.fOrders
+    Calendar: noted-computing-279322.halo_1_1.Calendar
+    magento_affiliate_marketing: noted-computing-279322.halo_1_1.magento_affiliate_marketing
+    B_magento_Image4: noted-computing-279322.halo_1_1.fProductImage
 
 # This setting configures which "profile" dbt uses for this project.
 profile: 'misslksa'
@@ -39,7 +41,7 @@ clean-targets:         # directories to be removed by `dbt clean`
 # as tables. These settings can be overridden in the individual model files
 # using the `{{ config(...) }}` macro.
 models:
-  MisslKSA:
+  Missl_KSA:
       # Applies to all files under models/example/
     Tables:
         materialized: table
