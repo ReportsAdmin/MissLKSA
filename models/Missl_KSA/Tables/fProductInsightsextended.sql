@@ -1,4 +1,3 @@
-
 select *, from
 (select prodinsights.*,stock.inventory,stock.mrp,stock.selling_price from (
 (select prod.*,image.image from(

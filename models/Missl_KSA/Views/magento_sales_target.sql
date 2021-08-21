@@ -1,0 +1,1 @@
+Select PARSE_DATE("%Y-%m-%d", Date) as date_level1, Target as target_spend, comments, updated_on from `noted-computing-279322.sales_targets.Revenue_Goals_KSA_Day_level`

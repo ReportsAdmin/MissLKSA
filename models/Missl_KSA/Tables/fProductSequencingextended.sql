@@ -1,4 +1,3 @@
-
 select *
 from (select *,row_number() over (partition by category_L2 order by AverageRev desc) DesiredPositioning,'MissL' Halo_Country
         from(select a.*,safe_divide(Revenue,30) AverageRev,activationdate.activation_date
