@@ -1,4 +1,3 @@
-
 Select tp.* except(city), city.mapped_city__st as city from
 (Select topsell.*, price.price, live_dt.created_at as live_date from
 (

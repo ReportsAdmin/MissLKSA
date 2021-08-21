@@ -1,0 +1,1 @@
+SELECT * from `noted-computing-279322.marketing_goals_trial.Marketing_trial`
